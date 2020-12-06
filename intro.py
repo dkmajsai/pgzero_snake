@@ -1,23 +1,16 @@
+import pgzrun
 import random
 
 DEBUG = True
 WIDTH = 400
 HEIGHT = 400
 
-snake = [Actor('snake_head.png', topleft=(40,20))] # an array of actors
-snake.append(Actor('snake_body.png', topleft=(20,20)))
-snake.append(Actor('snake_tail.png', topleft=(0,20)))
+snake = []
+walls = []
+apples = []
 
 COLOR_WALL = (0, 0, 0)
 COLOR_BACKGROUND = (255, 255, 255)
-
-walls = []
-walls.append(Rect((0, 0), (20, HEIGHT)))            # LEFT
-walls.append(Rect((0, 0), (WIDTH, 20)))             # TOP
-walls.append(Rect((WIDTH - 20, 0), (20, HEIGHT)))   # RIGHT
-walls.append(Rect((0, HEIGHT - 20), (WIDTH, 20)))   # BOTTOM
-
-apples = []
 
 extend_snake = False
 snake_collision = False
@@ -27,6 +20,44 @@ snake_step = 20
 
 cframe = 0  # global counter to count frames
 speed = 10  # will be speed / 60
+
+def add_apple():
+    range_x = (WIDTH / 20) - 1
+    range_y = (HEIGHT / 20) - 1
+    
+    apple = ''
+    while(True):
+        apple = Actor("apple", topleft=(random.randint(0, range_x) * 20, random.randint(0, range_y) * 20))
+        
+        # check if that collids with anything existing
+        if apple.collidelist(walls) is not -1: continue
+        if apple.collidelist(snake) is not -1: continue
+        
+        break
+    
+    apples.append(apple)
+
+def init():
+    global snake, walls, apples, extend_snake, snake_collision, direction
+    
+    snake = [Actor('snake_head.png', topleft=(40,20))] # an array of actors
+    snake.append(Actor('snake_body.png', topleft=(20,20)))
+    snake.append(Actor('snake_tail.png', topleft=(0,20)))
+
+    walls = []
+    walls.append(Rect((0, 0), (20, HEIGHT)))            # LEFT
+    walls.append(Rect((0, 0), (WIDTH, 20)))             # TOP
+    walls.append(Rect((WIDTH - 20, 0), (20, HEIGHT)))   # RIGHT
+    walls.append(Rect((0, HEIGHT - 20), (WIDTH, 20)))   # BOTTOM
+    
+    apples.clear()
+    add_apple()
+    
+    extend_snake = False
+    snake_collision = False
+    direction = 2 # 0=left 1=up 2=right 3=down
+
+init() # must be called here after it is declared
 
 def draw():
     global snake, walls
@@ -41,7 +72,6 @@ def draw():
         screen.draw.filled_rect(wall, COLOR_WALL)
         
     # draw apples
-    if len(apples) == 0: add_apple()
     for apple in apples:
         apple.draw()
     
@@ -51,8 +81,7 @@ def draw():
 
 # this function is called 60 times a second
 def update():
-    global cframe
-    global speed
+    global cframe, speed, snake_collision
 
     if snake_collision: return
 
@@ -122,8 +151,7 @@ def check_collision():
         add_apple()
 
 def on_key_down(key):
-    global direction
-    global extend_snake
+    global direction, extend_snake, snake_collision
     
     if key == keys.LEFT:     # left
         if direction != 2:
@@ -148,6 +176,9 @@ def on_key_down(key):
     
     dprint(direction)
     
+    if key == keys.R and snake_collision:
+        init()
+    
     # for debugging purpose
     if DEBUG:
         if key == keys.E:
@@ -155,22 +186,6 @@ def on_key_down(key):
         
         if key == keys.A:
             add_apple()
-
-def add_apple():
-    range_x = (WIDTH / 20) - 1
-    range_y = (HEIGHT / 20) - 1
-    
-    apple = ''
-    while(True):
-        apple = Actor("apple", topleft=(random.randint(0, range_x) * 20, random.randint(0, range_y) * 20))
-        
-        # check if that collids with anything existing
-        if apple.collidelist(walls) is not -1: continue
-        if apple.collidelist(snake) is not -1: continue
-        
-        break
-    
-    apples.append(apple)
 
 # print msg in debug mode
 def dprint(msg):
