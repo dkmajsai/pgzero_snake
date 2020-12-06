@@ -47,11 +47,14 @@ def move_snake():
             bodypart = snake[i]
             bodypart_before = snake[i-1]
             bodypart.center = bodypart_before.center
+            bodypart.angle = bodypart_before.angle
     
     # insert bodypart after the head at the current location of head
     if extend_snake:
-        snake.insert(1, Actor('snake_body.png', center=snake[0].center))
         extend_snake = False
+        new_bodypart = Actor('snake_body.png', center=snake[0].center)
+        new_bodypart.angle = snake[0].angle
+        snake.insert(1, new_bodypart)
     
     # move the head
     if direction == 0:    # left
