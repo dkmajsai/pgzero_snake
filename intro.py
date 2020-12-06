@@ -1,3 +1,5 @@
+import random
+
 DEBUG = False
 WIDTH = 400
 HEIGHT = 400
@@ -6,13 +8,16 @@ snake = [Actor('snake_head.png', topleft=(40,20))] # an array of actors
 snake.append(Actor('snake_body.png', topleft=(20,20)))
 snake.append(Actor('snake_tail.png', topleft=(0,20)))
 
-COLOR_WALL = (255,255,255)
+COLOR_WALL = (0, 0, 0)
+COLOR_BACKGROUND = (255, 255, 255)
 
 walls = []
 walls.append(Rect((0, 0), (20, HEIGHT)))            # LEFT
 walls.append(Rect((0, 0), (WIDTH, 20)))             # TOP
 walls.append(Rect((WIDTH - 20, 0), (20, HEIGHT)))   # RIGHT
 walls.append(Rect((0, HEIGHT - 20), (WIDTH, 20)))   # BOTTOM
+
+apples = []
 
 extend_snake = False
 snake_collision = False
@@ -29,9 +34,15 @@ def draw():
     # clear all from sceen
     screen.clear()
     
+    screen.fill(COLOR_BACKGROUND)
+    
     # draw walls
     for wall in walls:
         screen.draw.filled_rect(wall, COLOR_WALL)
+        
+    # draw apples
+    for apple in apples:
+        apple.draw()
     
     # draw snake
     for actor in snake:
@@ -132,7 +143,25 @@ def on_key_down(key):
     if DEBUG:
         if key == keys.E:
             extend_snake = True
-             
+        
+        if key == keys.A:
+            add_apple()
+
+def add_apple():
+    range_x = (WIDTH / 20) - 1
+    range_y = (HEIGHT / 20) - 1
+    
+    apple = ''
+    while(True):
+        apple = Actor("apple", topleft=(random.randint(0, range_x) * 20, random.randint(0, range_y) * 20))
+        
+        # check if that collids with anything existing
+        if apple.collidelist(walls) is not -1: continue
+        if apple.collidelist(snake) is not -1: continue
+        
+        break
+    
+    apples.append(apple)
 
 # print msg in debug mode
 def dprint(msg):
