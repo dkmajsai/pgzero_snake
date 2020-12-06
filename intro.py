@@ -1,11 +1,12 @@
 DEBUG = False
-
 WIDTH = 400
 HEIGHT = 400
 
 snake = [Actor('snake_head.png', topleft=(40,20))] # an array of actors
 snake.append(Actor('snake_body.png', topleft=(20,20)))
 snake.append(Actor('snake_tail.png', topleft=(0,20)))
+
+extend_snake = False
 
 direction = 2 # 0=left 1=up 2=right 3=down
 snake_step = 20
@@ -34,13 +35,23 @@ def update():
     
 def move_snake():
     global snake_step
+    global extend_snake
     
-    # move tail and body
-    for i in range(len(snake)-1, 0, -1):
-        dprint(i)
-        bodypart = snake[i]
-        bodypart_before = snake[i-1]
-        bodypart.center = bodypart_before.center
+    # if snake needs to be extended, do not move the body,
+    # extend it with one bodypart after the head
+    
+    # move tail and body if snake is not extending
+    if not extend_snake:
+        for i in range(len(snake)-1, 0, -1):
+            dprint(i)
+            bodypart = snake[i]
+            bodypart_before = snake[i-1]
+            bodypart.center = bodypart_before.center
+    
+    # insert bodypart after the head at the current location of head
+    if extend_snake:
+        snake.insert(1, Actor('snake_body.png', center=snake[0].center))
+        extend_snake = False
     
     # move the head
     if direction == 0:    # left
@@ -53,8 +64,11 @@ def move_snake():
         snake[0].top += snake_step
 
 
+
+
 def on_key_down(key):
     global direction
+    global extend_snake
     
     if key == keys.LEFT:     # left
         if direction != 2:
@@ -78,6 +92,12 @@ def on_key_down(key):
         dprint("pressed key: DOWN")
     
     dprint(direction)
+    
+    # for debugging purpose
+    if DEBUG:
+        if key == keys.E:
+            extend_snake = True
+             
 
 # print msg in debug mode
 def dprint(msg):
