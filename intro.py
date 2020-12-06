@@ -89,11 +89,16 @@ def check_collision():
     # collision needs to be checked with the snake head
     global snake, snake_collision
     
-    # with body and tail
+    # collison check with body and tail
     for i in range(1, len(snake)-1, 1):
         if snake[0].collidepoint(snake[i].center):
             snake_collision = True
-            dprint('hit')
+            dprint('hit self')
+            
+    # collision check with the walls
+    if snake[0].collidelist(walls) is not -1:
+            snake_collision = True
+            dprint('hit wall')
 
 
 def on_key_down(key):
