@@ -7,6 +7,7 @@ snake.append(Actor('snake_body.png', topleft=(20,20)))
 snake.append(Actor('snake_tail.png', topleft=(0,20)))
 
 extend_snake = False
+snake_collision = False
 
 direction = 2 # 0=left 1=up 2=right 3=down
 snake_step = 20
@@ -26,6 +27,8 @@ def update():
     global cframe
     global speed
 
+    if snake_collision: return
+
     # adjust movement according to speed
     if cframe == speed:
         move_snake()
@@ -43,7 +46,6 @@ def move_snake():
     # move tail and body if snake is not extending
     if not extend_snake:
         for i in range(len(snake)-1, 0, -1):
-            dprint(i)
             bodypart = snake[i]
             bodypart_before = snake[i-1]
             bodypart.center = bodypart_before.center
@@ -65,8 +67,18 @@ def move_snake():
         snake[0].right += snake_step
     else:                 # down
         snake[0].top += snake_step
+        
+    check_collision()
 
-
+def check_collision():
+    # collision needs to be checked with the snake head
+    global snake, snake_collision
+    
+    # with body and tail
+    for i in range(1, len(snake)-1, 1):
+        if snake[0].collidepoint(snake[i].center):
+            snake_collision = True
+            dprint('hit')
 
 
 def on_key_down(key):
