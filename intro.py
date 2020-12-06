@@ -6,6 +6,14 @@ snake = [Actor('snake_head.png', topleft=(40,20))] # an array of actors
 snake.append(Actor('snake_body.png', topleft=(20,20)))
 snake.append(Actor('snake_tail.png', topleft=(0,20)))
 
+COLOR_WALL = (255,255,255)
+
+walls = []
+walls.append(Rect((0, 0), (20, HEIGHT)))            # LEFT
+walls.append(Rect((0, 0), (WIDTH, 20)))             # TOP
+walls.append(Rect((WIDTH - 20, 0), (20, HEIGHT)))   # RIGHT
+walls.append(Rect((0, HEIGHT - 20), (WIDTH, 20)))   # BOTTOM
+
 extend_snake = False
 snake_collision = False
 
@@ -16,7 +24,14 @@ cframe = 0  # global counter to count frames
 speed = 10  # will be speed / 60
 
 def draw():
+    global snake, walls
+
+    # clear all from sceen
     screen.clear()
+    
+    # draw walls
+    for wall in walls:
+        screen.draw.filled_rect(wall, COLOR_WALL)
     
     # draw snake
     for actor in snake:
