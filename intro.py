@@ -57,20 +57,24 @@ def on_key_down(key):
     global direction
     
     if key == keys.LEFT:     # left
-        direction = 0
-        snake[0].angle = 180
+        if direction != 2:
+            direction = 0
+            snake[0].angle = 180
         dprint("pressed key: LEFT")
     elif key == keys.UP:     # up
-        direction = 1
-        snake[0].angle = 90
+        if direction != 3:
+            direction = 1
+            snake[0].angle = 90
         dprint("pressed key: UP")
     elif key == keys.RIGHT:  # right
-        direction = 2
-        snake[0].angle = 0
+        if direction != 0:
+            direction = 2
+            snake[0].angle = 0
         dprint("pressed key: RIGHT")
     elif key == keys.DOWN:   # down
-        direction = 3
-        snake[0].angle = 270
+        if direction != 1:
+            direction = 3
+            snake[0].angle = 270
         dprint("pressed key: DOWN")
     
     dprint(direction)
