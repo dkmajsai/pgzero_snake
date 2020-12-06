@@ -1,7 +1,7 @@
 import pgzrun
 import random
 
-DEBUG = True
+DEBUG = False
 WIDTH = 400
 HEIGHT = 400
 
@@ -75,9 +75,9 @@ def draw():
     for apple in apples:
         apple.draw()
     
-    # draw snake
-    for actor in snake:
-        actor.draw()
+    # draw snake ==> draw head last
+    for i in range(len(snake) - 1, -1 , -1):
+        snake[i].draw()
 
 # this function is called 60 times a second
 def update():
