@@ -1,6 +1,6 @@
 import random
 
-DEBUG = False
+DEBUG = True
 WIDTH = 400
 HEIGHT = 400
 
@@ -41,6 +41,7 @@ def draw():
         screen.draw.filled_rect(wall, COLOR_WALL)
         
     # draw apples
+    if len(apples) == 0: add_apple()
     for apple in apples:
         apple.draw()
     
@@ -63,8 +64,9 @@ def update():
         cframe += 1
     
 def move_snake():
-    global snake_step
-    global extend_snake
+    global snake_step, extend_snake
+    
+    snake_head = snake[0]
     
     # if snake needs to be extended, do not move the body,
     # extend it with one bodypart after the head
@@ -80,37 +82,44 @@ def move_snake():
     # insert bodypart after the head at the current location of head
     if extend_snake:
         extend_snake = False
-        new_bodypart = Actor('snake_body.png', center=snake[0].center)
-        new_bodypart.angle = snake[0].angle
+        new_bodypart = Actor('snake_body.png', center=snake_head.center)
+        new_bodypart.angle = snake_head.angle
         snake.insert(1, new_bodypart)
     
     # move the head
     if direction == 0:    # left
-        snake[0].right -= snake_step 
+        snake_head.right -= snake_step 
     elif direction == 1:  # up
-        snake[0].top -= snake_step
+        snake_head.top -= snake_step
     elif direction == 2:  # right
-        snake[0].right += snake_step
+        snake_head.right += snake_step
     else:                 # down
-        snake[0].top += snake_step
+        snake_head.top += snake_step
         
     check_collision()
 
 def check_collision():
-    # collision needs to be checked with the snake head
-    global snake, snake_collision
+    global snake, snake_collision, extend_snake, apples
+    
+    snake_head = snake[0]
     
     # collison check with body and tail
     for i in range(1, len(snake)-1, 1):
-        if snake[0].collidepoint(snake[i].center):
+        if snake_head.collidepoint(snake[i].center):
             snake_collision = True
             dprint('hit self')
             
     # collision check with the walls
-    if snake[0].collidelist(walls) is not -1:
+    if snake_head.collidelist(walls) is not -1:
             snake_collision = True
             dprint('hit wall')
 
+    # check if apple is catched
+    apple_caught_idx = snake_head.collidelist(apples)
+    if apple_caught_idx is not -1:
+        extend_snake = True
+        apples.pop(apple_caught_idx)
+        add_apple()
 
 def on_key_down(key):
     global direction
